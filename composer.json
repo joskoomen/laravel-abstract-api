@@ -1,0 +1,29 @@
+{
+    "name": "joskoomen/abstract-api",
+    "description": "Abstract package for extra security in API's",
+    "type": "package",
+    "require": {
+        "nesbot/Carbon": "~1.26",
+        "joskoomen/guzzlehttp": "^0.5.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "3.7.*",
+        "laravel/tinker": "^1.0",
+        "phpunit/phpunit": "^7.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jos Koomen",
+            "email": "hello@joskoo.men"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "JosKoomen\\AbstractApi\\": "src/"
+        },
+        "files": [
+            "helpers.php"
+        ]
+    }
+}
