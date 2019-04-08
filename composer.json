@@ -4,7 +4,7 @@
     "type": "package",
     "require": {
         "nesbot/Carbon": "~1.26",
-        "joskoomen/guzzlehttp": "^0.5.0"
+        "joskoomen/guzzlehttp": "^1.*"
     },
     "require-dev": {
         "orchestra/testbench": "3.7.*",
