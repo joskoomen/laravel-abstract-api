@@ -3,7 +3,7 @@
     "description": "Abstract package for extra security in API's",
     "type": "package",
     "require": {
-        "nesbot/Carbon": "~1.26",
+        "nesbot/carbon": "^1.26.3 || ~2.16.3",
         "joskoomen/guzzlehttp": "1.*"
     },
     "require-dev": {
