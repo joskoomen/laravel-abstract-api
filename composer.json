@@ -1,6 +1,7 @@
 {
     "name": "joskoomen/abstract-api",
     "description": "Abstract package for extra security in API's",
+    "version": "1.0.2",
     "type": "package",
     "require": {
         "nesbot/carbon": "^1.26.3 || ~2.16.3",
