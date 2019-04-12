@@ -1,11 +1,15 @@
 <?php
 
-use JosKoomen\AbstractApi\AbstractApiFactory as AbstractApi;
-
-if (!function_exists('joskoomen_abstract_api')) {
-    function joskoomen_abstract_api()
+if (!function_exists('is_laravel')) {
+    function is_laravel()
     {
-        $factory = app(AbstractApi::class);
-        return $factory;
+        return (app() && app() instanceof \Illuminate\Foundation\Application);
+    }
+}
+
+if (!function_exists('is_lumen')) {
+    function is_lumen()
+    {
+        return (app() && app() instanceof \Laravel\Lumen\Application);
     }
 }

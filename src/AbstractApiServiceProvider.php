@@ -51,13 +51,15 @@ class AbstractApiServiceProvider extends ServiceProvider
 
     private function handleConfigs()
     {
-        $configPath = __DIR__ . '/../config/joskoomen-abstractapi.php';
+        if (is_laravel()) {
+            $configPath = __DIR__ . '/../config/joskoomen-abstractapi.php';
 
-        $this->publishes([
-            $configPath => config_path('joskoomen-abstractapi.php')
-        ], $this->package_name);
+            $this->publishes([
+                $configPath => config_path('joskoomen-abstractapi.php')
+            ], $this->package_name);
 
-        $this->mergeConfigFrom($configPath, $this->package_name);
+            $this->mergeConfigFrom($configPath, $this->package_name);
+        }
     }
 
     private function handleTranslations()
@@ -67,6 +69,8 @@ class AbstractApiServiceProvider extends ServiceProvider
 
     private function handleMiddleware()
     {
-        $this->app['router']->pushMiddlewareToGroup('api', AbstractApiMiddleware::class);
+        if (is_laravel()) {
+            $this->app['router']->pushMiddlewareToGroup('api', AbstractApiMiddleware::class);
+        }
     }
 }
