@@ -19,6 +19,7 @@ trait AbstractApiValidationTrait
         $data['code'] = 400;
         $data['success'] = false;
 
+
         if ($this->_isEncodingEnabled()) {
             if (!isset($values)) {
 
@@ -48,7 +49,7 @@ trait AbstractApiValidationTrait
                 $data['message'] = __('joskoomen.api.abstract.invalidsig');
                 if ($this->_hasDebugMode()) {
                     $data['string'] = $string;
-                    $data['hashKey'] = $this->_getHashSecret();
+                    $data['hashKey'] = $this->getHashSecret();
                     $data['values'] = $values;
                 }
                 return $data;
@@ -97,7 +98,8 @@ trait AbstractApiValidationTrait
     protected function getHashSecret()
     {
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::getHashSecret ( ' . config('joskoomen-abstractapi.hashsecret') . ' )');
+            if (is_laravel()) Log::debug('AbstractApiValidationTrait::getHashSecret ( ' . config('joskoomen-abstractapi.hashsecret') . ' )');
+            if (is_lumen()) Log::debug('AbstractApiValidationTrait::getHashSecret ( ' . env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET') . ' )');
         }
         return is_laravel() ? config('joskoomen-abstractapi.hashsecret') : env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET');
     }
@@ -195,12 +197,16 @@ trait AbstractApiValidationTrait
             Log::debug('AbstractApiValidationTrait::_buildHash "$string:" ( ' . $string . ' )');
         }
 
+        $hashType = is_laravel() ? config('joskoomen-abstractapi.hashtype') : env('JOSKOOMEN_ABSTRACT_API_HASHTYPE');
+
+        return hash(strval($hashType), $string . $this->getHashSecret());
     }
 
     private function _getMaxValidTimeDifference()
     {
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . config('joskoomen-abstractapi.timedifferences') . ' )');
+            if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . config('joskoomen-abstractapi.timedifferences') . ' )');
+            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . env('JOSKOOMEN_ABSTRACT_API_TIME_DIFFERENCES') . ' )');
         }
         return is_laravel() ? config('joskoomen-abstractapi.timedifferences') : env('JOSKOOMEN_ABSTRACT_API_TIME_DIFFERENCES');
     }
@@ -208,11 +214,14 @@ trait AbstractApiValidationTrait
     private function _getHashType()
     {
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_getHashType ( ' . config('joskoomen-abstractapi.hashtype') . ' )');
+            if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . config('joskoomen-abstractapi.hashtype') . ' )');
+            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . env('JOSKOOMEN_ABSTRACT_API_DEBUG') . ' )');
         }
 
-        
-        return is_laravel() ? config('joskoomen-abstractapi.hashtype') : env('JOSKOOMEN_ABSTRACT_API_DEBUG');
+        if (is_lumen()) {
+            return env('JOSKOOMEN_ABSTRACT_API_DEBUG');
+        }
+        return config('joskoomen-abstractapi.hashtype');
     }
 
     private function _hasDebugMode()
