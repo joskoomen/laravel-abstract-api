@@ -197,9 +197,7 @@ trait AbstractApiValidationTrait
             Log::debug('AbstractApiValidationTrait::_buildHash "$string:" ( ' . $string . ' )');
         }
 
-        $hashType = is_laravel() ? config('joskoomen-abstractapi.hashtype') : env('JOSKOOMEN_ABSTRACT_API_HASHTYPE');
-
-        return hash(strval($hashType), $string . $this->getHashSecret());
+        return hash(strval($this->_getHashType()), $string . $this->getHashSecret());
     }
 
     private function _getMaxValidTimeDifference()
@@ -215,23 +213,23 @@ trait AbstractApiValidationTrait
     {
         if ($this->_hasDebugMode()) {
             if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . config('joskoomen-abstractapi.hashtype') . ' )');
-            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . env('JOSKOOMEN_ABSTRACT_API_DEBUG') . ' )');
+            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . env('JOSKOOMEN_ABSTRACT_API_HASHTYPE') . ' )');
         }
 
         if (is_lumen()) {
-            return env('JOSKOOMEN_ABSTRACT_API_DEBUG');
+            return env('JOSKOOMEN_ABSTRACT_API_HASHTYPE');
         }
         return config('joskoomen-abstractapi.hashtype');
     }
 
     private function _hasDebugMode()
     {
-        return is_laravel() ? config('joskoomen-abstractapi.debug') : env('JOSKOOMEN_ABSTRACT_API_HASHTYPE');
+        return is_laravel() ? boolval(config('joskoomen-abstractapi.debug')) : boolval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'));
     }
 
     private function _isEncodingEnabled()
     {
-        $isDisabled = boolval(config('joskoomen-abstractapi.disable'));
+        $isDisabled = is_laravel() ? boolval(config('joskoomen-abstractapi.disable')) : boolval(env('JOSKOOMEN_ABSTRACT_API_DISABLE'));
 
         $isProduction = app()->environment('production');
         // !isDisabled = enabled
