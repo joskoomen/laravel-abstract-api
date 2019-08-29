@@ -129,7 +129,7 @@ trait AbstractApiValidationTrait
             if ($key != 'sig') {
                 switch ($key) {
                     default:
-                        $string .= $key . '=' . json_encode(strval($value));
+                        $string .= $key . '=' . json_encode($value);
                         break;
                     case 'hashtype':
                     case 'string':
