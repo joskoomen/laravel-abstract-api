@@ -109,7 +109,7 @@ trait AbstractApiValidationTrait
      | Private methods
      |--------------------------------------------------------------------------
      */
-    private function _buildSigFromValues($values)
+    private function _buildSigFromValues($values, $pPrefix = '')
     {
         if ($this->_hasDebugMode()) {
             Log::debug('AbstractApiValidationTrait::_buildSigFromValues "given values:"', $values);
@@ -129,7 +129,12 @@ trait AbstractApiValidationTrait
             if ($key != 'sig') {
                 switch ($key) {
                     default:
-                        $string .= $key . '=' . json_encode($value);
+                        $prefix = empty($pPrefix) ? $pPrefix : $pPrefix . '-';
+                        if (is_array($value)) {
+                            $string .= $this->_buildSigFromValues($value, $prefix . $key);
+                        } else {
+                            $string .= $prefix . $key . '=' . json_encode(strval($value));
+                        }
                         break;
                     case 'hashtype':
                     case 'string':
@@ -224,16 +229,18 @@ trait AbstractApiValidationTrait
 
     private function _hasDebugMode()
     {
-        return is_laravel() ? boolval(config('joskoomen-abstractapi.debug')) : boolval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'));
+        $value = is_laravel() ? (strtolower(strval(config('joskoomen-abstractapi.debug'))) === 'true') : (strtolower(strval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'))) === 'true');
+        return boolval($value);
     }
 
     private function _isEncodingEnabled()
     {
-        $isDisabled = is_laravel() ? boolval(config('joskoomen-abstractapi.disable')) : boolval(env('JOSKOOMEN_ABSTRACT_API_DISABLE'));
+        $isDisabled = is_laravel() ? (strtolower(strval(config('joskoomen-abstractapi.disable'))) === 'true') : (strtolower(strval(env('JOSKOOMEN_ABSTRACT_API_DISABLE'))) === 'true');
 
         $isProduction = app()->environment('production');
         // !isDisabled = enabled
         // if enabled or when it's the production environment it always returns true
         return !$isDisabled || $isProduction;
     }
+
 }
