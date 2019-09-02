@@ -109,7 +109,7 @@ trait AbstractApiValidationTrait
      | Private methods
      |--------------------------------------------------------------------------
      */
-    private function _buildSigFromValues($values)
+    private function _buildSigFromValues($values, $prefix = '')
     {
         if ($this->_hasDebugMode()) {
             Log::debug('AbstractApiValidationTrait::_buildSigFromValues "given values:"', $values);
@@ -129,7 +129,11 @@ trait AbstractApiValidationTrait
             if ($key != 'sig') {
                 switch ($key) {
                     default:
-                        $string .= $key . '=' . json_encode($value);
+                        if (is_array($value)) {
+                            $string .= $this->_buildSigFromValues($value, $key);
+                        } else {
+                            $string .= $prefix . '-' . $key . '=' . json_encode(strval($value));
+                        }
                         break;
                     case 'hashtype':
                     case 'string':
@@ -189,7 +193,7 @@ trait AbstractApiValidationTrait
         }
 
         return $sig === $value;
-    }
+    }x
 
     private function _buildHash($string)
     {
