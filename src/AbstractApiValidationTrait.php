@@ -193,7 +193,7 @@ trait AbstractApiValidationTrait
         }
 
         return $sig === $value;
-    }x
+    }
 
     private function _buildHash($string)
     {
