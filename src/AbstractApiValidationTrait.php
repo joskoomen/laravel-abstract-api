@@ -229,8 +229,7 @@ trait AbstractApiValidationTrait
 
     private function _hasDebugMode()
     {
-        $value = is_laravel() ? (strtolower(strval(config('joskoomen-abstractapi.debug'))) === 'true') : (strtolower(strval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'))) === 'true');
-        return boolval($value);
+        return is_laravel() ? boolval(config('joskoomen-abstractapi.debug')) : boolval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'));
     }
 
     private function _isEncodingEnabled()
