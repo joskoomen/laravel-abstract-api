@@ -9,11 +9,11 @@ trait AbstractApiValidationTrait
 {
 
     /**
-     * @param $values : Illuminate\Database\Eloquent\Collection
-     * @param $urlencode : boolean
+     * @param $pValues : Illuminate\Database\Eloquent\Collection
+     * @param $pUrlencode : boolean
      * @return array for json
      */
-    public function validateValues($values, $urlencode = false)
+    public function validateValues($pValues, $pUrlencode = false)
     {
         $data = [];
         $data['code'] = 400;
@@ -21,36 +21,42 @@ trait AbstractApiValidationTrait
 
 
         if ($this->_isEncodingEnabled()) {
-            if (!isset($values)) {
+            if (!isset($pValues)) {
 
                 $data['message'] = __('joskoomen.api.abstract.empty');
                 return $data;
-            };
+            }
 
-            if (!isset($values['time']) || is_null($values['time'])) {
+            if (!isset($pValues['time']) || is_null($pValues['time'])) {
                 $data['message'] = __('joskoomen.api.abstract.notime');
                 return $data;
-            };
+            }
 
-            if (!$this->_validateTimeValue($values['time'])) {
+            if (!$this->_validateTimeValue($pValues['time'])) {
                 $data['message'] = __('joskoomen.api.abstract.outdated');
                 return $data;
             }
 
-            if (!isset($values['sig']) || is_null($values['sig'])) {
+            if (!isset($pValues['sig']) || is_null($pValues['sig'])) {
                 $data['message'] = __('joskoomen.api.abstract.nosig');
                 return $data;
-            };
+            }
 
-            $string = $this->_buildSigFromValues($values);
+            if (isset($pValues['hashkey'])) {
+                $key = $pValues['hashkey'];
+            } else {
+                $key = null;
+            }
 
-            if (!$this->_validateHashedValue($string, $values['sig'], $urlencode)) {
+            $string = $this->_buildSigFromValues($pValues);
+
+            if (!$this->_validateHashedValue($string, $pValues['sig'], $key, $pUrlencode)) {
                 $data['code'] = 401;
                 $data['message'] = __('joskoomen.api.abstract.invalidsig');
                 if ($this->_hasDebugMode()) {
                     $data['string'] = $string;
-                    $data['hashKey'] = $this->getHashSecret();
-                    $data['values'] = $values;
+                    $data['hashKey'] = $this->getHashSecret($key);
+                    $data['values'] = $pValues;
                 }
                 return $data;
             }
@@ -61,33 +67,33 @@ trait AbstractApiValidationTrait
         return $data;
     }
 
-    public function addTimeAndSignature($values, $urlencode = false)
+    public function addTimeAndSignature($pValues, $pUrlencode = false)
     {
         if ($this->_isEncodingEnabled()) {
-            $values['time'] = time();
+            $pValues['time'] = time();
 
-            $string = $this->_buildSigFromValues($values);
+            $string = $this->_buildSigFromValues($pValues);
 
             if ($this->_hasDebugMode()) {
-                Log::debug('AbstractApiValidationTrait::addTimeAndSignature given $values:"', $values);
-                Log::debug('AbstractApiValidationTrait::addTimeAndSignature "$urlencode enabled:" ( ' . $urlencode . ' )');
+                Log::debug('AbstractApiValidationTrait::addTimeAndSignature given $pValues:"', $pValues);
+                Log::debug('AbstractApiValidationTrait::addTimeAndSignature "$pUrlencode enabled:" ( ' . $pUrlencode . ' )');
                 Log::debug('AbstractApiValidationTrait::addTimeAndSignature "$string:" ( ' . $string . ' )');
             }
 
-            if ($urlencode !== false) {
+            if ($pUrlencode !== false) {
                 $string = urlencode($string);
                 if ($this->_hasDebugMode()) {
                     Log::debug('AbstractApiValidationTrait::addTimeAndSignature "urlencoded $string:" ( ' . $string . ' )');
                 }
             }
 
-            $values['sig'] = $this->_buildHash($string);
+            $pValues['sig'] = $this->_buildHash($string);
             if ($this->_hasDebugMode()) {
-                Log::debug('AbstractApiValidationTrait::addTimeAndSignature $values[\'sig\']:" ( ' . $values['sig'] . ' )');
+                Log::debug('AbstractApiValidationTrait::addTimeAndSignature $pValues[\'sig\']:" ( ' . $pValues['sig'] . ' )');
             }
         }
 
-        return $values;
+        return $pValues;
     }
 
     /*
@@ -95,13 +101,17 @@ trait AbstractApiValidationTrait
      | Protected methods
      |--------------------------------------------------------------------------
      */
-    protected function getHashSecret()
+    protected function getHashSecret($pKey = null)
     {
-        if ($this->_hasDebugMode()) {
-            if (is_laravel()) Log::debug('AbstractApiValidationTrait::getHashSecret ( ' . config('joskoomen-abstractapi.hashsecret') . ' )');
-            if (is_lumen()) Log::debug('AbstractApiValidationTrait::getHashSecret ( ' . env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET') . ' )');
+        if (is_null($pKey)) {
+            $key = is_laravel() ? config('joskoomen-abstractapi.hashsecret') : env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET');
+        } else {
+            $key = env($pKey);
         }
-        return is_laravel() ? config('joskoomen-abstractapi.hashsecret') : env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET');
+        if ($this->_hasDebugMode()) {
+            Log::debug('AbstractApiValidationTrait::getHashSecret ( ' . $key . ' )');
+        }
+        return $key;
     }
 
     /*
@@ -109,22 +119,22 @@ trait AbstractApiValidationTrait
      | Private methods
      |--------------------------------------------------------------------------
      */
-    private function _buildSigFromValues($values, $pPrefix = '')
+    private function _buildSigFromValues($pValues, $pPrefix = '')
     {
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_buildSigFromValues "given values:"', $values);
+            Log::debug('AbstractApiValidationTrait::_buildSigFromValues "given values:"', $pValues);
         }
         $string = '';
 
         // Sort values alphabetic
         // @url http://php.net/manual/en/function.ksort.php
-        ksort($values);
+        ksort($pValues);
 
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_buildSigFromValues "alphabetic sorted values:"', $values);
+            Log::debug('AbstractApiValidationTrait::_buildSigFromValues "alphabetic sorted values:"', $pValues);
         }
 
-        foreach ($values as $key => $value) {
+        foreach ($pValues as $key => $value) {
 
             if ($key != 'sig') {
                 switch ($key) {
@@ -151,9 +161,9 @@ trait AbstractApiValidationTrait
         return $string;
     }
 
-    private function _validateTimeValue($time)
+    private function _validateTimeValue($pTime)
     {
-        $date = Carbon::createFromTimestampUTC($time);
+        $date = Carbon::createFromTimestampUTC($pTime);
 
         $now = Carbon::now();
         $now->setTimezone('UTC');
@@ -161,7 +171,7 @@ trait AbstractApiValidationTrait
         $difference = $now->diffInSeconds($date) < $this->_getMaxValidTimeDifference();
 
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_validateTimeValue given $time:" ( ' . $time . ' )');
+            Log::debug('AbstractApiValidationTrait::_validateTimeValue given $pTime:" ( ' . $pTime . ' )');
             Log::debug('AbstractApiValidationTrait::_validateTimeValue "$date [UTC]:" ( ' . $date . ' )');
             Log::debug('AbstractApiValidationTrait::_validateTimeValue "$now [UTC]:" ( ' . $now . ' )');
             Log::debug('AbstractApiValidationTrait::_validateTimeValue "$now->diffInSeconds($date):" ( ' . $now->diffInSeconds($date) . ' )');
@@ -172,37 +182,39 @@ trait AbstractApiValidationTrait
         return $difference;
     }
 
-    private function _validateHashedValue($string, $sig, $urlencode = false)
+    private function _validateHashedValue($pString, $pSig, $pKey = null, $pUrlencode = false)
     {
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_validateHashedValue "given $sig:" ( ' . $sig . ' )');
-            Log::debug('AbstractApiValidationTrait::_validateHashedValue "urlencode values?:" ( ' . $urlencode . ' )');
-            Log::debug('AbstractApiValidationTrait::_validateHashedValue "given $string:" ( ' . $string . ' )');
+            Log::debug('AbstractApiValidationTrait::_validateHashedValue "given $pSig:" ( ' . $pSig . ' )');
+            Log::debug('AbstractApiValidationTrait::_validateHashedValue "urlencode values?:" ( ' . $pUrlencode . ' )');
+            Log::debug('AbstractApiValidationTrait::_validateHashedValue "given $pString:" ( ' . $pString . ' )');
+            Log::debug('AbstractApiValidationTrait::_validateHashedValue "given $pKey:" ( ' . $pKey . ' )');
         }
 
-        if ($urlencode !== false) {
-            $string = urlencode($string);
+        if ($pUrlencode !== false) {
+            $pString = urlencode($pString);
             if ($this->_hasDebugMode()) {
-                Log::debug('AbstractApiValidationTrait::_validateHashedValue "urlencoded string:" ( ' . $string . ' )');
+                Log::debug('AbstractApiValidationTrait::_validateHashedValue "urlencoded string:" ( ' . $pString . ' )');
             }
         }
 
-        $value = $this->_buildHash($string);
+        $value = $this->_buildHash($pString, $pKey);
 
         if ($this->_hasDebugMode()) {
             Log::debug('AbstractApiValidationTrait::_validateHashedValue "$value:" ( ' . $value . ' )');
         }
 
-        return $sig === $value;
+        return $pSig === $value;
     }
 
-    private function _buildHash($string)
+    private function _buildHash($pString, $pKey = null)
     {
         if ($this->_hasDebugMode()) {
-            Log::debug('AbstractApiValidationTrait::_buildHash "$string:" ( ' . $string . ' )');
+            Log::debug('AbstractApiValidationTrait::_buildHash "$pString:" ( ' . $pString . ' )');
+            Log::debug('AbstractApiValidationTrait::_buildHash "$pKey:" ( ' . $pKey . ' )');
         }
 
-        return hash(strval($this->_getHashType()), $string . $this->getHashSecret());
+        return hash(strval($this->_getHashType()), $pString . $this->getHashSecret($pKey));
     }
 
     private function _getMaxValidTimeDifference()
@@ -230,7 +242,7 @@ trait AbstractApiValidationTrait
     private function _hasDebugMode()
     {
         $value = is_laravel() ? (strtolower(strval(config('joskoomen-abstractapi.debug'))) === 'true') : (strtolower(strval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'))) === 'true');
-        return boolval($value);
+        return (boolean)$value;
     }
 
     private function _isEncodingEnabled()
