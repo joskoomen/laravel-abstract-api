@@ -86,8 +86,8 @@ trait AbstractApiValidationTrait
                     Log::debug('AbstractApiValidationTrait::addTimeAndSignature "urlencoded $string:" ( ' . $string . ' )');
                 }
             }
-
-            $pValues['sig'] = $this->_buildHash($string, $pValues['hashkey']);
+            $hashkey = isset($pValues['hashkey']) ? $pValues['hashkey'] : null;
+            $pValues['sig'] = $this->_buildHash($string, $hashkey);
             if ($this->_hasDebugMode()) {
                 Log::debug('AbstractApiValidationTrait::addTimeAndSignature $pValues[\'sig\']:" ( ' . $pValues['sig'] . ' )');
             }
