@@ -87,7 +87,7 @@ trait AbstractApiValidationTrait
                 }
             }
 
-            $pValues['sig'] = $this->_buildHash($string);
+            $pValues['sig'] = $this->_buildHash($string, $pValues['hashkey']);
             if ($this->_hasDebugMode()) {
                 Log::debug('AbstractApiValidationTrait::addTimeAndSignature $pValues[\'sig\']:" ( ' . $pValues['sig'] . ' )');
             }
