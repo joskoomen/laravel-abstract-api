@@ -5,7 +5,7 @@
     "type": "package",
     "require": {
         "nesbot/carbon": "^2.26",
-        "joskoomen/guzzlehttp/": "1.*"
+        "joskoomen/guzzlehttp": "1.*"
     },
     "require-dev": {},
     "license": "MIT",
