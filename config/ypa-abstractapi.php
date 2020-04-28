@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| JosKoomen Abstract API
+| Ypa Abstract API
 |--------------------------------------------------------------------------
 |
 | The following options should be equal in all applications.
@@ -23,7 +23,7 @@ return [
     |
     */
 
-    'timedifferences' => env('JOSKOOMEN_ABSTRACT_API_TIME_DIFFERENCES', 30),
+    'timedifferences' => env('YPA_ABSTRACT_API_TIME_DIFFERENCES', 30),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | type of encoding. It should be the same on all ends!
     |
     */
-    'hashsecret' => env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET', env('APP_KEY')),
+    'hashsecret' => env('YPA_ABSTRACT_API_HASH_SECRET', env('APP_KEY')),
 
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ return [
     | type of encoding. It should be the same on all ends!
     |
     */
-    'hashtype' => env('JOSKOOMEN_ABSTRACT_API_HASHTYPE', 'sha512'),
+    'hashtype' => env('YPA_ABSTRACT_API_HASHTYPE', 'sha512'),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,7 +56,7 @@ return [
     | Debug logs should be disabled in any production environment!
     |
     */
-    'debug' => env('JOSKOOMEN_ABSTRACT_API_DEBUG', false),
+    'debug' => env('YPA_ABSTRACT_API_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -68,5 +68,5 @@ return [
     | Disable mode is not working in any production environment!
     |
     */
-    'disable' => env('JOSKOOMEN_ABSTRACT_API_DISABLE', false)
+    'disable' => env('YPA_ABSTRACT_API_DISABLE', false)
 ];

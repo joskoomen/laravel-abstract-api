@@ -1,6 +1,6 @@
 <?php
 
-namespace JosKoomen\AbstractApi;
+namespace Ypa\AbstractApi;
 
 use Closure;
 

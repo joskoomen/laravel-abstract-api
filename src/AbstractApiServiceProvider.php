@@ -1,6 +1,6 @@
-<?php namespace JosKoomen\AbstractApi;
+<?php namespace Ypa\AbstractApi;
 
-use JosKoomen\Core\GuzzleHttp\GuzzleClientServiceProvider;
+use Ypa\Core\GuzzleHttp\GuzzleClientServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class AbstractApiServiceProvider extends ServiceProvider
@@ -12,7 +12,7 @@ class AbstractApiServiceProvider extends ServiceProvider
      * @var bool
      */
     protected $defer = true;
-    protected $package_name = 'joskoomen';
+    protected $package_name = 'ypa';
 
     /**
      * Bootstrap the application events.
@@ -35,7 +35,7 @@ class AbstractApiServiceProvider extends ServiceProvider
     public function register()
     {
         // Bind any implementations.
-        $this->app->bind('joskoomen_abstract_api', AbstractApiFactory::class);
+        $this->app->bind('ypa_abstract_api', AbstractApiFactory::class);
 
     }
 
@@ -52,10 +52,10 @@ class AbstractApiServiceProvider extends ServiceProvider
     private function handleConfigs()
     {
         if (is_laravel()) {
-            $configPath = __DIR__ . '/../config/joskoomen-abstractapi.php';
+            $configPath = __DIR__ . '/../config/ypa-abstractapi.php';
 
             $this->publishes([
-                $configPath => config_path('joskoomen-abstractapi.php')
+                $configPath => config_path('ypa-abstractapi.php')
             ], $this->package_name);
 
             $this->mergeConfigFrom($configPath, $this->package_name);
