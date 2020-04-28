@@ -1,6 +1,6 @@
 <?php
 
-namespace JosKoomen\AbstractApi;
+namespace Ypa\AbstractApi;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -23,22 +23,22 @@ trait AbstractApiValidationTrait
         if ($this->_isEncodingEnabled()) {
             if (!isset($pValues)) {
 
-                $data['message'] = __('joskoomen.api.abstract.empty');
+                $data['message'] = __('ypa.api.abstract.empty');
                 return $data;
             }
 
             if (!isset($pValues['time']) || is_null($pValues['time'])) {
-                $data['message'] = __('joskoomen.api.abstract.notime');
+                $data['message'] = __('ypa.api.abstract.notime');
                 return $data;
             }
 
             if (!$this->_validateTimeValue($pValues['time'])) {
-                $data['message'] = __('joskoomen.api.abstract.outdated');
+                $data['message'] = __('ypa.api.abstract.outdated');
                 return $data;
             }
 
             if (!isset($pValues['sig']) || is_null($pValues['sig'])) {
-                $data['message'] = __('joskoomen.api.abstract.nosig');
+                $data['message'] = __('ypa.api.abstract.nosig');
                 return $data;
             }
 
@@ -52,7 +52,7 @@ trait AbstractApiValidationTrait
 
             if (!$this->_validateHashedValue($string, $pValues['sig'], $key, $pUrlencode)) {
                 $data['code'] = 401;
-                $data['message'] = __('joskoomen.api.abstract.invalidsig');
+                $data['message'] = __('ypa.api.abstract.invalidsig');
                 if ($this->_hasDebugMode()) {
                     $data['string'] = $string;
                     $data['hashKey'] = $this->getHashSecret($key);
@@ -104,7 +104,7 @@ trait AbstractApiValidationTrait
     protected function getHashSecret($pKey = null)
     {
         if (is_null($pKey)) {
-            $key = is_laravel() ? config('joskoomen-abstractapi.hashsecret') : env('JOSKOOMEN_ABSTRACT_API_HASH_SECRET');
+            $key = is_laravel() ? config('ypa-abstractapi.hashsecret') : env('YPA_ABSTRACT_API_HASH_SECRET');
         } else {
             $key = env($pKey);
         }
@@ -220,34 +220,34 @@ trait AbstractApiValidationTrait
     private function _getMaxValidTimeDifference()
     {
         if ($this->_hasDebugMode()) {
-            if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . config('joskoomen-abstractapi.timedifferences') . ' )');
-            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . env('JOSKOOMEN_ABSTRACT_API_TIME_DIFFERENCES') . ' )');
+            if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . config('ypa-abstractapi.timedifferences') . ' )');
+            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getMaxValidTimeDifference ( ' . env('YPA_ABSTRACT_API_TIME_DIFFERENCES') . ' )');
         }
-        return is_laravel() ? config('joskoomen-abstractapi.timedifferences') : env('JOSKOOMEN_ABSTRACT_API_TIME_DIFFERENCES');
+        return is_laravel() ? config('ypa-abstractapi.timedifferences') : env('YPA_ABSTRACT_API_TIME_DIFFERENCES');
     }
 
     private function _getHashType()
     {
         if ($this->_hasDebugMode()) {
-            if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . config('joskoomen-abstractapi.hashtype') . ' )');
-            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . env('JOSKOOMEN_ABSTRACT_API_HASHTYPE') . ' )');
+            if (is_laravel()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . config('ypa-abstractapi.hashtype') . ' )');
+            if (is_lumen()) Log::debug('AbstractApiValidationTrait::_getHashType ( ' . env('YPA_ABSTRACT_API_HASHTYPE') . ' )');
         }
 
         if (is_lumen()) {
-            return env('JOSKOOMEN_ABSTRACT_API_HASHTYPE');
+            return env('YPA_ABSTRACT_API_HASHTYPE');
         }
-        return config('joskoomen-abstractapi.hashtype');
+        return config('ypa-abstractapi.hashtype');
     }
 
     private function _hasDebugMode()
     {
-        $value = is_laravel() ? (strtolower(strval(config('joskoomen-abstractapi.debug'))) === 'true') : (strtolower(strval(env('JOSKOOMEN_ABSTRACT_API_DEBUG'))) === 'true');
+        $value = is_laravel() ? (strtolower(strval(config('ypa-abstractapi.debug'))) === 'true') : (strtolower(strval(env('YPA_ABSTRACT_API_DEBUG'))) === 'true');
         return (boolean)$value;
     }
 
     private function _isEncodingEnabled()
     {
-        $isDisabled = is_laravel() ? (strtolower(strval(config('joskoomen-abstractapi.disable'))) === 'true') : (strtolower(strval(env('JOSKOOMEN_ABSTRACT_API_DISABLE'))) === 'true');
+        $isDisabled = is_laravel() ? (strtolower(strval(config('ypa-abstractapi.disable'))) === 'true') : (strtolower(strval(env('YPA_ABSTRACT_API_DISABLE'))) === 'true');
 
         $isProduction = app()->environment('production');
         // !isDisabled = enabled

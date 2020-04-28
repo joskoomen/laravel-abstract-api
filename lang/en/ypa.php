@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Jos Koomen Abstract API Language Lines
+    | YPA Abstract API Language Lines
     |--------------------------------------------------------------------------
     |
     | The following language lines are used in the responses for various
