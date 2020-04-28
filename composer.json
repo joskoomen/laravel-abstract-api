@@ -1,11 +1,11 @@
 {
     "name": "ypa/abstract-api",
     "description": "Abstract package for extra security in API's",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "type": "package",
     "require": {
         "nesbot/carbon": "^2.26",
-        "joskoomen/guzzlehttp/": "1.*"
+        "joskoomen/guzzlehttp": "1.*"
     },
     "require-dev": {},
     "license": "MIT",
