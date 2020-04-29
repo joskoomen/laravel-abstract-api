@@ -46,7 +46,7 @@ class AbstractApiServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [GuzzleClientServiceProvider::class];
+        return [];
     }
 
     private function handleConfigs()
