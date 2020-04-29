@@ -143,7 +143,9 @@ trait AbstractApiValidationTrait
                         if (is_array($value)) {
                             $string .= $this->_buildSigFromValues($value, $prefix . $key);
                         } else {
-                            $string .= $prefix . $key . '=' . json_encode(strval($value));
+                            if(!is_null($value)) {
+                                $string .= $prefix . $key . '=' . json_encode(strval($value));
+                            }
                         }
                         break;
                     case 'hashtype':
